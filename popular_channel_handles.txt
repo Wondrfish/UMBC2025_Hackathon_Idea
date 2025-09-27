@@ -1,0 +1,52 @@
+```
+Channel,Handle / URL name,Notes
+MrBeast,MrBeast,Primary handle is “MrBeast”
+T-Series,TSeries,Official name / handle
+Cocomelon – Nursery Rhymes,Cocomelon,Cocomelon as handle
+SET India,SETIndia,Official YouTube handle
+Vlad and Niki,VladandNiki,Handle matches name
+Kids Diana Show,KidsDianaShow,Handle matches name
+Stokes Twins,StokesTwins,Handle matches name
+Like Nastya,LikeNastya,Handle matches name
+김프로KIMPRO,KIMPRO,Transliterated / channel name
+Zee Music Company,ZeeMusicCompany,Official branding
+WWE,WWE,Handle is WWE
+PewDiePie,PewDiePie,Handle is PewDiePie
+Goldmines,Goldmines,Brand name as handle
+Sony SAB,SonySAB,Handle matches name
+BLACKPINK,BLACKPINK,Handle is BLACKPINK
+ChuChu TV Nursery Rhymes & Kids Songs,ChuchuTV,Often “ChuChuTV”
+Alan’s Universe,AlansUniverse,Handle matches name
+Zee TV,ZeeTV,Brand name as handle
+Alejo Igoa,AlejoIgoa,Verified from Wikipedia: “Channel Handle: AlejoIgoa” :contentReference[oaicite:0]{index=0}
+A4,A4,Short name used as handle
+Pinkfong,Pinkfong,Brand name as handle
+BANGTANTV,BANGTANTV,Official handle
+Colors TV,ColorsTV,Brand handle
+5-Minute Crafts,5MinuteCrafts,Brand handle
+ZAMZAM ELECTRONICS TRADING,ZAMZAMELECTRONICSTRADING,Longest version, maybe a custom URL
+T-Series Bhakti Sagar,TSeriesBhaktiSagar,Sub-channel name
+Tips Official,TipsOfficial,Brand handle
+Hybe Labels,HybeLabels,Official handle
+KL BRO Biju Rithvik, (unknown),Couldn’t verify
+Topper Guild,TopperGuild,Likely handle
+UR · Cristiano,URCristiano,Channel for Ronaldo
+Justin Bieber,JustinBieber,Handle matches artist name
+Aaj Tak,AajTak,News brand’s handle
+Shemaroo Filmi Gaane,ShemarooFilmiGaane,Brand handle
+Infobells – Hindi,InfobellsHindi,Localized handle
+Mark Rober,MarkRober,Handle matches name
+El Reino Infantil,ElReinoInfantil,Brand handle
+HAR PAL GEO,HARPALGEO,Brand / custom handle likely
+Fede Vigevani,FedeVigevani,Creator’s name as handle
+YRF,YRF,Brand name as handle
+Sony Music India,SonyMusicIndia,Brand handle
+Canal KondZilla,KondZilla,Often just “KondZilla”
+ISSEI / いっせい,issei0806,Verified handle from Wikipedia: “@issei0806” :contentReference[oaicite:1]{index=1}
+Wave Music,WaveMusic,Brand name as handle
+Eminem Music,EminemMusic,Brand handle
+ARY Digital HD,ARYDigitalHD,Network handle
+YOLO AVENTURAS,YoloAventuras,Handle matches name
+Movieclips,Movieclips,Handle is Movieclips
+Anaya Kandhal,AnayaKandhal,Creator name as handle
+```
