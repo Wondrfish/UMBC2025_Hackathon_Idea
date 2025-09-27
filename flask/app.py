@@ -1,8 +1,13 @@
 from flask import Flask, jsonify
 import os
+import sys
 import google.generativeai as genai
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+
+# import google_auth_oauthlib.flow
+import googleapiclient.discovery
+import googleapiclient.errors
 
 # Instanstiaze flask app
 app = Flask(__name__)
@@ -14,6 +19,9 @@ db = SQLAlchemy(app)
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+YT_API_KEY = os.getenv("YOUTUBE_API_KEY")
+PUBLIC_CHANNEL_ID = "@GoogleDevelopers"
 
 
 @app.route("/")
@@ -46,6 +54,43 @@ def grab_context():
     # Pull user data from db and parse into strings
     user_data = " "
     return f"{CONTEXT_TEXT}\n {user_data}"
+
+
+@app.route("/grab-yt-data/")
+def grab_yt_data():
+    get_public_channel_info()
+    return "hi"
+
+
+# -----------------------------
+# API REQUEST FUNCTIONS
+# -----------------------------
+def get_public_channel_info():
+    """Retrieve info about a public channel using an API key."""
+    youtube = get_youtube_service_api_key()
+    request = youtube.channels().list(
+        part="snippet, statistics", forHandle=PUBLIC_CHANNEL_ID
+    )
+    response = request.execute()
+
+    print(f"{PUBLIC_CHANNEL_ID} Channel Info (API Key):")
+    # print(response)
+
+    channel = response["items"][0]
+
+    channel_name = channel["snippet"]["title"]
+    channel_pic = channel["snippet"]["thumbnails"]["default"]["url"]
+    stats = channel["statistics"]
+
+    # Print or return
+    print("Channel Name:", channel_name)
+    print("Channel Pic URL:", channel_pic)
+    print("Statistics:", stats)
+
+
+def get_youtube_service_api_key():
+    """Create a YouTube API service using an API key."""
+    return googleapiclient.discovery.build("youtube", "v3", developerKey=YT_API_KEY)
 
 
 # class UserActivity(db.Model):
