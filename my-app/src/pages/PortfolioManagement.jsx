@@ -26,7 +26,12 @@ export default function PortfolioManagement() {
   const [channels, setChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [channelData, setChannelData] = useState([]); // holds chart data
+  const [channelData, setChannelData] = useState([]);
+
+  // Chat state
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
 
   // Fetch channels from backend
   useEffect(() => {
@@ -42,7 +47,6 @@ export default function PortfolioManagement() {
         console.error("Error fetching channels:", error);
       }
     }
-
     fetchChannels();
   }, []);
 
@@ -51,7 +55,6 @@ export default function PortfolioManagement() {
     if (!selectedChannel) return;
     const channel = channels.find((c) => c.name === selectedChannel);
     if (channel) {
-      // Example: generate 7 days of views with slight random variation
       const data = Array.from({ length: 7 }, (_, i) =>
         Math.floor(channel.views * (0.9 + Math.random() * 0.2))
       );
@@ -84,38 +87,55 @@ export default function PortfolioManagement() {
       title: {
         display: true,
         text: 'Top 50 Videos Time vs. Views',
-        front: {
-          size: 18
-        }
       },
     },
     scales: {
       x: {
         reverse: true,
-        title: {
-          display: true,
-          text: 'Time'
-        },
+        title: { display: true, text: 'Time' },
         beginAtZero: false,
         ticks: {
-          callback: function (value, index, ticks) {
-            return value + " day(s)"
-          }
-        }
+          callback: (value) => value + " day(s)",
+        },
       },
       y: {
-        title: {
-          display: true,
-          text: 'Views'
-        },
+        title: { display: true, text: 'Views' },
         beginAtZero: true,
         ticks: {
-          callback: function (value, index, ticks) {
-            return value + ' mill';
-          }
-        }
-      }
+          callback: (value) => value + ' mill',
+        },
+      },
     },
+  };
+
+  // Handle sending chat message
+  const sendChat = async () => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = { sender: "user", text: chatInput };
+    setChatHistory((prev) => [...prev, userMessage]);
+    setChatInput("");
+    setChatLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/gemini-chat/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: chatInput }),
+      });
+
+      const data = await response.json();
+      const botMessage = { sender: "bot", text: data.reply };
+      setChatHistory((prev) => [...prev, botMessage]);
+    } catch (err) {
+      console.error("Chat API error:", err);
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "bot", text: "Error: Could not reach server." },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   return (
@@ -142,7 +162,6 @@ export default function PortfolioManagement() {
         <div className="flex gap-6 flex-1">
           {/* Chart Section */}
           <div className="flex-1 flex flex-col gap-4">
-            {/* Search Input */}
             <input
               type="text"
               placeholder="Search for a channel..."
@@ -150,8 +169,6 @@ export default function PortfolioManagement() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition mb-2"
             />
-
-            {/* Dropdown */}
             <select
               value={selectedChannel}
               onChange={(e) => setSelectedChannel(e.target.value)}
@@ -164,14 +181,10 @@ export default function PortfolioManagement() {
               ))}
             </select>
 
-            {/* Chart / Channel Info */}
             <div className="bg-white rounded-xl shadow-lg p-6 h-96 flex flex-col gap-4">
-              {/* Chart.js Canvas */}
               <div className="flex-1">
                 {selectedChannel && <Line data={chartData} options={chartOptions} />}
               </div>
-
-              {/* Channel Info */}
               {filteredChannels
                 .filter((c) => c.name === selectedChannel)
                 .map((channel) => (
@@ -189,14 +202,34 @@ export default function PortfolioManagement() {
           {/* AI Chat Section */}
           <aside className="w-1/3 bg-white shadow-lg rounded-xl p-6 flex flex-col gap-4">
             <h2 className="text-xl font-bold mb-2">🤖 Chatbot</h2>
-            <div className="flex-1 bg-gray-50 p-4 rounded-md text-gray-600 overflow-y-auto">
-              <p>AI Assistant is here to help</p>
+            <div className="flex-1 bg-gray-50 p-4 rounded-md text-gray-600 overflow-y-auto space-y-2">
+              {chatHistory.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 rounded-md ${msg.sender === "user" ? "bg-blue-100 text-blue-800 self-end" : "bg-gray-200 text-gray-800"
+                    }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+              {chatLoading && <p className="text-gray-400">AI is typing...</p>}
             </div>
-            <input
-              type="text"
-              placeholder="Ask anything..."
-              className="mt-2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-            />
+            <div className="flex mt-2 gap-2">
+              <input
+                type="text"
+                placeholder="Ask anything..."
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                onKeyDown={(e) => e.key === "Enter" && sendChat()}
+              />
+              <button
+                onClick={sendChat}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Send
+              </button>
+            </div>
           </aside>
         </div>
       </main>

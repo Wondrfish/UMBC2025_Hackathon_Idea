@@ -5,6 +5,7 @@ import pandas as pd
 import google.generativeai as genai
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from flask import request
 
 from typing import Dict, List, Tuple
 import math
@@ -115,6 +116,29 @@ def analyze():
     response = model.generate_content(grab_context())
     # print(response.text)
     return f"{response.text[:100]}..."
+
+
+@app.route("/gemini-chat/", methods=["POST"])
+def gemini_chat():
+    """
+    Accepts a user message, sends it to Gemini API, and returns the AI reply.
+    """
+    data = request.get_json()
+    user_message = data.get("message", "")
+
+    if not user_message.strip():
+        return jsonify({"reply": "Please send a message."})
+
+    # Combine with context from DB or your predefined context
+    CONTEXT_TEXT = "Limit to 1 paragraph. Do not use markdown. "
+
+    # Create the Gemini model
+    model = genai.GenerativeModel("gemini-2.5-flash")
+
+    # Generate response
+    response = model.generate_content(f"{CONTEXT_TEXT}\nUser message: {user_message}")
+
+    return jsonify({"reply": response.text})
 
 
 def grab_context():
