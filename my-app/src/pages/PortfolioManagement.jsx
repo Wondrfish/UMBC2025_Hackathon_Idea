@@ -1,9 +1,32 @@
 import { useState, useEffect } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function PortfolioManagement() {
   const [channels, setChannels] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [channelData, setChannelData] = useState([]); // holds chart data
 
   // Fetch channels from backend
   useEffect(() => {
@@ -23,10 +46,77 @@ export default function PortfolioManagement() {
     fetchChannels();
   }, []);
 
+  // Update chart data when selected channel changes
+  useEffect(() => {
+    if (!selectedChannel) return;
+    const channel = channels.find((c) => c.name === selectedChannel);
+    if (channel) {
+      // Example: generate 7 days of views with slight random variation
+      const data = Array.from({ length: 7 }, (_, i) =>
+        Math.floor(channel.views * (0.9 + Math.random() * 0.2))
+      );
+      setChannelData(data);
+    }
+  }, [selectedChannel, channels]);
+
   // Filter channels by search query
   const filteredChannels = channels.filter((channel) =>
     channel.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Chart.js config
+  const chartData = {
+    labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"],
+    datasets: [
+      {
+        label: `${selectedChannel} Views`,
+        data: channelData,
+        borderColor: "rgba(37, 99, 235, 1)",
+        backgroundColor: "rgba(37, 99, 235, 0.2)",
+        tension: 0.3,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Top 50 Videos Time vs. Views',
+        front: {
+          size: 18
+        }
+      },
+    },
+    scales: {
+      x: {
+        reverse: true,
+        title: {
+          display: true,
+          text: 'Time'
+        },
+        beginAtZero: false,
+        ticks: {
+          callback: function (value, index, ticks) {
+            return value + " day(s)"
+          }
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Views'
+        },
+        beginAtZero: true,
+        ticks: {
+          callback: function (value, index, ticks) {
+            return value + ' mill';
+          }
+        }
+      }
+    },
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 p-6 gap-6">
@@ -75,22 +165,24 @@ export default function PortfolioManagement() {
             </select>
 
             {/* Chart / Channel Info */}
-            <div className="bg-white rounded-xl shadow-lg p-6 h-96 flex flex-col items-start justify-start gap-2 overflow-y-auto">
-              {filteredChannels.length === 0 ? (
-                <p className="text-gray-400">No channels found.</p>
-              ) : (
-                filteredChannels
-                  .filter((c) => c.name === selectedChannel)
-                  .map((channel) => (
-                    <div
-                      key={channel.name}
-                      className="flex justify-between w-full border-b border-gray-200 pb-1 text-gray-800 font-medium"
-                    >
-                      <span>{channel.name}</span>
-                      <span>{channel.views.toLocaleString()} views</span>
-                    </div>
-                  ))
-              )}
+            <div className="bg-white rounded-xl shadow-lg p-6 h-96 flex flex-col gap-4">
+              {/* Chart.js Canvas */}
+              <div className="flex-1">
+                {selectedChannel && <Line data={chartData} options={chartOptions} />}
+              </div>
+
+              {/* Channel Info */}
+              {filteredChannels
+                .filter((c) => c.name === selectedChannel)
+                .map((channel) => (
+                  <div
+                    key={channel.name}
+                    className="flex justify-between w-full border-b border-gray-200 pb-1 text-gray-800 font-medium"
+                  >
+                    <span>{channel.name}</span>
+                    <span>{channel.views.toLocaleString()} views</span>
+                  </div>
+                ))}
             </div>
           </div>
 
