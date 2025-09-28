@@ -223,12 +223,14 @@ def populate_historical_data():
     for i in range(7):
         for channel in historical_data:
             if Youtuber.query.filter_by(channel_name=channel).first() is not None:
+                r = random.uniform(0, 10)
+                vol = 1 + (r / 10)
                 new_stat = ChannelStats(
                     youtuber_id=Youtuber.query.filter_by(channel_name=channel)
                     .first()
                     .id,
                     day=i,
-                    view_count=historical_data[channel],
+                    view_count=int(historical_data[channel] * vol),
                 )
                 db.session.add(new_stat)
                 db.session.commit()
