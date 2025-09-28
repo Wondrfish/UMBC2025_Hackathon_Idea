@@ -138,7 +138,7 @@ def gemini_chat():
     # Generate response
     response = model.generate_content(f"{CONTEXT_TEXT}\nUser message: {user_message}")
 
-    return jsonify({"reply": response.text})
+    return jsonify({"reply": "Gemini: " + response.text})
 
 
 def grab_context():
