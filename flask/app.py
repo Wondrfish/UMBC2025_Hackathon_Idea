@@ -30,7 +30,7 @@ PUBLIC_CHANNEL_ID = "@GoogleDevelopers"
 # ===================
 class Youtuber(db.Model):
     """
-    Model for user activity points (how much profit, trades, etc.)
+    Model for Youtuber "stock" selection
     """
 
     __tablename__ = "youtube_channels"
@@ -41,6 +41,24 @@ class Youtuber(db.Model):
     profile_pic = db.Column(db.String(255), nullable=True)
     view_count = db.Column(db.Integer, nullable=False)
     subs = db.Column(db.Integer, nullable=False)
+
+
+class UserBehavior(db.Model):
+    """
+    Model for user activity points (how much profit, trades, etc.)
+    """
+
+    __tablename__ = "user_behavior"
+    __table_args__ = {"extend_existing": True}
+    id = db.Column(db.Integer, primary_key=True)  # primary key
+    day = db.Column(db.Integer, nullable=False)
+    bought_stocks = db.Column(
+        db.Integer, db.ForeignKey("youtube_channels.id"), nullable=False
+    )
+    sold_stocks = db.Column(
+        db.Integer, db.ForeignKey("youtube_channels.id"), nullable=False
+    )
+    running_net = db.Column(db.Integer)
 
 
 # -------------------------
@@ -160,3 +178,4 @@ def parse_handles():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
