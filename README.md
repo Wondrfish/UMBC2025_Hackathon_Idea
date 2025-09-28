@@ -41,5 +41,3 @@ YouTube Data API v3
 Reddit API
 News API for market sentiment
 
-## API KEY (REMEMBER TO DELETE)
-## AIzaSyBH6eIGSnQymH14UqE6NfO6Wm62PCpG7Us
