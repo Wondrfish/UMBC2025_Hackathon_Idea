@@ -24,6 +24,42 @@ YT_API_KEY = os.getenv("YOUTUBE_API_KEY")
 PUBLIC_CHANNEL_ID = "@GoogleDevelopers"
 
 
+# ===================
+# DB Models
+# ===================
+class Youtuber(db.Model):
+    """
+    Model for user activity points (how much profit, trades, etc.)
+    """
+
+    __tablename__ = "youtube_channels"
+    __table_args__ = {"extend_existing": True}
+    id = db.Column(db.Integer, primary_key=True)  # primary key
+    channel_name = db.Column(db.String(100), unique=False, nullable=False)
+    channel_handle = db.Column(db.String(100), unique=False, nullable=False)
+    profile_pic = db.Column(db.String(255), nullable=True)
+    view_count = db.Column(db.Integer, nullable=False)
+    subs = db.Column(db.Integer, nullable=False)
+
+
+# -------------------------
+# Create tables (if not exist)
+# -------------------------
+with app.app_context():
+    db.create_all()
+    print("Database file created at:", os.path.abspath("db.sqlite3"))
+
+
+# with app.app_context():
+#     db.drop_all()  # deletes all tables
+#     db.create_all()  # recreate tables
+
+
+# ==================================
+# App code
+# ==================================
+
+
 @app.route("/")
 def home():
     return "Hello world!"
@@ -76,6 +112,7 @@ def get_public_channel_info():
     print(f"{PUBLIC_CHANNEL_ID} Channel Info (API Key):")
     # print(response)
 
+    channel_items = response["items"]
     channel = response["items"][0]
 
     channel_name = channel["snippet"]["title"]
@@ -83,20 +120,26 @@ def get_public_channel_info():
     stats = channel["statistics"]
 
     # Print or return
-    print("Channel Name:", channel_name)
-    print("Channel Pic URL:", channel_pic)
+    # print("Channel Name:", channel_name)
+    # print("Channel Pic URL:", channel_pic)
+    print("Channel info:", response["items"])
     print("Statistics:", stats)
+
+    new_channel = Youtuber(
+        channel_name=channel_name,
+        channel_handle=channel["snippet"]["customUrl"],
+        profile_pic=channel_pic,
+        view_count=int(stats["viewCount"]),
+        subs=int(stats["subscriberCount"]),
+    )
+
+    db.session.add(new_channel)
+    db.session.commit()
 
 
 def get_youtube_service_api_key():
     """Create a YouTube API service using an API key."""
     return googleapiclient.discovery.build("youtube", "v3", developerKey=YT_API_KEY)
-
-
-# class UserActivity(db.Model):
-#     """
-#     Model for user activity points (how much profit, trades, etc.)
-#     """
 
 
 if __name__ == "__main__":
