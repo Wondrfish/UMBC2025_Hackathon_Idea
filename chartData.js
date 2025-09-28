@@ -5,6 +5,14 @@ fetch('/data')
 
     var youtubeChart = new Chart(ctx, {
         type: 'line', 
+        data:{
+            labels: [1, 2, 3, 4],
+            datasets: {
+                label: "working",
+                data: [1, 2, 3, 4],
+                backgroundColor: 'rgba(255, 0, 0)',
+            },
+        },
         options: {
             responsive: true,
             plugins: {
@@ -53,15 +61,16 @@ fetch('/data')
         youtubeChart.data.datasets[0].data.push(chartData.view_count[index]);
         
         //Having the chart length be at least 
-        if(chart.data.labels.length > 50){
+        if(youtubeChart.data.labels.length > 50){
             youtubeChart.data.labels.shift();
             youtubeChart.data.datasets[0].data.shift();
         }
 
-        youtubeChart.data.datasets[0].borderColor = 'rgba(${color}, 100, 100)';
-        youtubeChart.data.datasets[0].backgroundColor = 'rgba(${color}, 100, 100, 0.1)';
+        youtubeChart.data.datasets[0].borderColor = `rgba(${color}, 100, 100)`;
+        youtubeChart.data.datasets[0].backgroundColor = `rgba(${color}, 100, 100, 0.1)`;
 
-        chart.update();
+        youtubeChart.update();
         index++;
+        color = (color + 5) % 255;
     }, 1000);
 });
