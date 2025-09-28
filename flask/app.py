@@ -18,6 +18,11 @@ import googleapiclient.errors
 # Instanstiaze flask app
 app = Flask(__name__)
 
+from flask_cors import CORS
+
+CORS(app)
+
+
 # DB config
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -171,6 +176,13 @@ def get_public_channel_info():
 
             db.session.add(new_channel)
             db.session.commit()
+
+
+@app.route("/get-yt-channels-and-views/")
+def get_yt_channels_and_views():
+    channels = Youtuber.query.all()
+    channel_list = [{"name": c.channel_name, "views": c.view_count} for c in channels]
+    return jsonify(channel_list)
 
 
 def get_youtube_service_api_key():
